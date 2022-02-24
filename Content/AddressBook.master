@@ -1,0 +1,79 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="AddressBook.master.cs"
+    Inherits="Content_AddressBook" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+
+    <!-- Title -->
+    <title>AddressBook</title>
+
+
+    <asp:ContentPlaceHolder ID="cphHead" runat="server">
+    </asp:ContentPlaceHolder>
+
+    <!-- StyleSheet -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous" />
+    <link rel="stylesheet" href="css/AddressBook.css" />
+
+</head>
+<body class="bg-info">
+
+    
+    <form id="form1" runat="server">
+        <!-- Heading Start -->
+    <h2 class="font-weight-bold text-white bg-dark text-center m-0 p-1">Address<span class="text-info">Book</span></h2>
+    <!-- Heading End -->
+
+    <!-------------------------------------------------------------------->
+
+    <!-- Navigation Menu Start -->
+    <section class="bg-dark mb-3">
+
+        <div class="container py-2 px-4">
+            <nav class="justify-content-center">
+                <ul class="d-flex justify-content-around list-unstyled m-0">
+                    <li>
+                        <asp:HyperLink runat="server" NavigateUrl="~/AdminPanel/Contact/ContactList.aspx">Contact</asp:HyperLink>
+                    </li>
+                    <li>
+                        <asp:HyperLink runat="server" NavigateUrl="~/AdminPanel/ContactCategory/ContactCategoryList.aspx">Contact Category</asp:HyperLink>
+                    </li>
+                    <li>
+                        <asp:HyperLink runat="server" NavigateUrl="~/AdminPanel/City/CityList.aspx">City</asp:HyperLink>
+                    </li>
+                    <li>
+                        <asp:HyperLink runat="server" NavigateUrl="~/AdminPanel/State/StateList.aspx">State</asp:HyperLink>
+                    </li>
+                    <li>
+                        <asp:HyperLink runat="server" NavigateUrl="~/AdminPanel/Country/CountryList.aspx">Country</asp:HyperLink>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </section>
+    <!-- Navigation Menu End -->
+
+    <!-------------------------------------------------------------------->
+
+    <!-- Main Content Start  -->
+        <div class="container-fluid">
+            <asp:ContentPlaceHolder ID="cphMainContent" runat="server">
+            </asp:ContentPlaceHolder>
+        </div>
+    <!-- Main Content End  -->
+
+    <!-------------------------------------------------------------------->
+
+    <!-- Footer start -->
+        <section class="bg-dark p-3 mt-3 text-center text-light" style="bottom:0px;">
+            190540107116 | Kushvaha Suraj | 190540107116@darshan.ac.in
+        </section>
+    </form>
+    
+
+</body>
+</html>
