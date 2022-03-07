@@ -7,99 +7,101 @@ using System.Web;
 /// <summary>
 /// Summary description for StateENT
 /// </summary>
-public class StateENT
+namespace AddressBook.ENT
 {
     public class StateENT
     {
-        #region Constructor
+       
+            #region Constructor
 
-        public StateENT()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
-       #endregion Constructor
-
-        #region StateID
-        protected SqlInt32 _StateID;
-
-        public SqlInt32 StateID
-        {
-            get
+            public StateENT()
             {
-                return _StateID;
+                //
+                // TODO: Add constructor logic here
+                //
             }
-            set
-            {
-                _StateID = value;
-            }
-        }
-        #endregion StateID
+            #endregion Constructor
 
-        #region CountryID
-        protected SqlInt32 _CountryID;
+            #region StateID
+            protected SqlInt32 _StateID;
 
-        public SqlInt32 CountryID
-        {
-            get
+            public SqlInt32 StateID
             {
-                return _CountryID;
+                get
+                {
+                    return _StateID;
+                }
+                set
+                {
+                    _StateID = value;
+                }
             }
-            set
-            {
-                _CountryID = value;
-            }
-        }
-        #endregion CountryID
+            #endregion StateID
 
-        #region StateName
-        protected SqlString _StateName;
+            #region CountryID
+            protected SqlInt32 _CountryID;
 
-        public SqlString StateName
-        {
-            get
+            public SqlInt32 CountryID
             {
-                return _StateName;
+                get
+                {
+                    return _CountryID;
+                }
+                set
+                {
+                    _CountryID = value;
+                }
             }
-            set
-            {
-                _StateName = value;
-            }
-        }
-        #endregion CountryName
+            #endregion CountryID
 
-        #region StateCode
-        protected SqlString _StateCode;
+            #region StateName
+            protected SqlString _StateName;
 
-        public SqlString StateCode
-        {
-            get
+            public SqlString StateName
             {
-                return _StateCode;
+                get
+                {
+                    return _StateName;
+                }
+                set
+                {
+                    _StateName = value;
+                }
             }
-            set
-            {
-                _StateCode = value;
-            }
-        }
-        #endregion StateCode
+            #endregion CountryName
 
-        #region CreationDate
-        protected SqlDateTime _CreationDate;
+            #region StateCode
+            protected SqlString _StateCode;
 
-        public SqlDateTime CreationDate
-        {
-            get
+            public SqlString StateCode
             {
-                return _CreationDate;
+                get
+                {
+                    return _StateCode;
+                }
+                set
+                {
+                    _StateCode = value;
+                }
             }
-            set
-            {
-                _CreationDate = value;
-            }
-        }
-        #endregion CreationDate
+            #endregion StateCode
 
+            #region CreationDate
+            protected SqlDateTime _CreationDate;
+
+            public SqlDateTime CreationDate
+            {
+                get
+                {
+                    return _CreationDate;
+                }
+                set
+                {
+                    _CreationDate = value;
+                }
+            }
+            #endregion CreationDate
+
+        
     }
 }

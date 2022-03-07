@@ -21,7 +21,6 @@ namespace AddressBook.ENT
         }
         #endregion Constructor
 
-
         #region CountryID
         protected SqlInt32 _CountryID;
 
