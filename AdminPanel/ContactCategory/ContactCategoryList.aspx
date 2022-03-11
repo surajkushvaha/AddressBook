@@ -11,10 +11,10 @@
             <h2 class="text-info">Contact Category List</h2>
             <asp:HyperLink runat="server" ID="add" NavigateUrl="~/AdminPanel/ContactCategory/ContactCategoryAddEditPage.aspx"><span class="btn btn-success">+ Add</span></asp:HyperLink>
         </div>
-         <div id="lblMsgDiv" runat="server" visible="false" class="w-100 my-2 alert alert-danger ">
+        <asp:Panel id="lblMsgDiv" runat="server" visible="false" class="w-100 my-2 alert alert-info ">        
             <asp:Label ID="lblErrMsg" runat="server"
                 EnableViewState="False" Visible="False"></asp:Label>
-        </div>
+        </asp:Panel>
         <div class="text-left">
             <asp:GridView ID="gvContactCategory" runat="server" OnRowCommand="gvContactCategory_RowCommand">
                 <Columns>

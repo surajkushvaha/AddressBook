@@ -56,13 +56,14 @@ namespace AddressBook.DAL
                         objCmd.CommandType = CommandType.StoredProcedure;
                         objCmd.CommandText = "PR_State_Insert";
                         objCmd.Parameters.Add("@StateID", SqlDbType.Int).Direction = ParameterDirection.Output;
+                        objCmd.Parameters.Add("@CountryID", SqlDbType.Int).Value = entState.CountryID;
                         objCmd.Parameters.Add("@StateName", SqlDbType.VarChar).Value = entState.StateName;
                         objCmd.Parameters.Add("@StateCode", SqlDbType.VarChar).Value = entState.StateCode;
                         #endregion Prepare Command
 
 
                         objCmd.ExecuteNonQuery();
-                        entState.StateID = (SqlInt32)objCmd.Parameters["@StateID"].Value;
+                        entState.StateID = Convert.ToInt32(objCmd.Parameters["@StateID"].Value);
 
                         return true;
 
@@ -104,7 +105,9 @@ namespace AddressBook.DAL
 
                         objCmd.CommandType = CommandType.StoredProcedure;
                         objCmd.CommandText = "PR_State_UpdateByPK";
-                        objCmd.Parameters.Add("@StateID", SqlDbType.Int).Value = entState.StateID;
+                        objCmd.Parameters.Add("@StateID", SqlDbType.Int).Value = entState.StateID; 
+                        objCmd.Parameters.Add("@CountryID", SqlDbType.Int).Value = entState.CountryID;
+
                         objCmd.Parameters.Add("@StateName", SqlDbType.VarChar).Value = entState.StateName;
                         objCmd.Parameters.Add("@StateCode", SqlDbType.VarChar).Value = entState.StateCode;
                         #endregion Prepare Command
@@ -257,6 +260,9 @@ namespace AddressBook.DAL
                                 {
                                     if (!objSDR["StateID"].Equals(DBNull.Value))
                                         entState.StateID = Convert.ToInt32(objSDR["StateID"]);
+
+                                    if (!objSDR["CountryID"].Equals(DBNull.Value))
+                                        entState.CountryID = Convert.ToInt32(objSDR["CountryID"]);
 
                                     if (!objSDR["StateName"].Equals(DBNull.Value))
                                         entState.StateName = Convert.ToString(objSDR["StateName"]);

@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Configuration;
 using System.Data.SqlTypes;
+using AddressBook.BAL;
 
 public partial class AdminPanel_Country_CountryList : System.Web.UI.Page
 {
@@ -24,107 +25,57 @@ public partial class AdminPanel_Country_CountryList : System.Web.UI.Page
     #region Fill GridView
     private void fillGridView()
     {
-        #region Local Variable
-        //connection string
-        SqlConnection objConn = new SqlConnection(ConfigurationManager.ConnectionStrings["AddressBookConnectionString"].ConnectionString);
-        #endregion Local Variable
-        try
+        CountryBAL balCountry = new CountryBAL();
+        DataTable dtCountry = new DataTable();
+
+        dtCountry = balCountry.SelectAll();
+
+        if (dtCountry != null && dtCountry.Rows.Count > 0)
         {
-            #region Connection & Command Object
-            if (objConn.State != ConnectionState.Open)
-                objConn.Open();//open the connection
 
-            //Command Operation
-            SqlCommand objCmd = objConn.CreateCommand();
-            objCmd.CommandType = CommandType.StoredProcedure;
-            objCmd.CommandText = "PR_Country_SelectAll";
-            #endregion Connection & Command Object
-
-            #region Read the value and set the controls
-            //SqlData reading and fetching
-            SqlDataReader objSDR = objCmd.ExecuteReader();
-
-            if (objSDR.HasRows)
-            {
-                gvCountry.DataSource = objSDR;
-                gvCountry.DataBind();
-            }
-            if (objConn.State == ConnectionState.Open)
-                objConn.Close(); // close the connection
-            #endregion Read the value and set the controls
-
+            gvCountry.DataSource = dtCountry;
+            gvCountry.DataBind();
         }
-        catch (Exception exc)
+        else
         {
+            gvCountry.DataSource = dtCountry;
+            gvCountry.DataBind();
+
+            lblErrMsg.Text = "No data";
             lblErrMsg.Visible = true;
             lblMsgDiv.Visible = true;
-            lblErrMsg.Text = exc.Message;
-
-        }
-        finally
-        {
-            if (objConn.State == ConnectionState.Open)
-                objConn.Close();
-
         }
 
     }
     #endregion Fill GridView
 
-    #region gvCountry : RowCommand
+    #region gvCountry : RowCommand Delete
     protected void gvCountry_RowCommand(object sender, GridViewCommandEventArgs e)
     {
         if (e.CommandName == "deleteRecord")
         {
             if (e.CommandArgument.ToString() != "")
             {
-                DeleteRecrord(Convert.ToInt32(e.CommandArgument.ToString().Trim()));
+                CountryBAL balCountry = new CountryBAL();
+
+                if (balCountry.Delete(Convert.ToInt32(e.CommandArgument.ToString().Trim())))
+                {
+                    fillGridView();
+
+                }
+                else
+                {
+
+                    lblErrMsg.Text = balCountry.Message;
+                    lblErrMsg.Visible = true;
+                    lblMsgDiv.Visible = true;
+
+                }
             }
         }
 
     }
-    #endregion gvCountry : RowCommand
+    #endregion gvCountry : RowCommand Delete
 
-    #region Delete Record
-    protected void DeleteRecrord(SqlInt32 CountryID)
-    {
-        #region Local Variable
-        SqlConnection objConn = new SqlConnection(ConfigurationManager.ConnectionStrings["AddressBookConnectionString"].ConnectionString.Trim());
-        #endregion Local Variable
-        try
-        {
-            #region Connection & Command Object
-            if (objConn.State != ConnectionState.Open)
-                objConn.Open();
-
-            SqlCommand objCmd = objConn.CreateCommand();
-            objCmd.CommandType = CommandType.StoredProcedure;
-            objCmd.CommandText = "PR_Country_DeleteByPK";
-            objCmd.Parameters.AddWithValue("@CountryID", CountryID.ToString());
-            objCmd.ExecuteNonQuery();
-            #endregion Connection & Command Object
-
-            if (objConn.State == ConnectionState.Open)
-                objConn.Close();
-
-        }
-        catch (Exception exc)
-        {
-            lblErrMsg.Visible = true;
-            lblMsgDiv.Visible = true;
-            lblErrMsg.Text = exc.Message;
-
-        }
-        finally
-        {
-            if (objConn.State == ConnectionState.Open)
-                objConn.Close();
-
-        }
-
-        fillGridView();
-
-    }
-    #endregion Delete Record
 
 }

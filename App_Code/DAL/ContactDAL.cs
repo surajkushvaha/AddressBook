@@ -65,7 +65,7 @@ namespace AddressBook.DAL
                         objCmd.Parameters.Add("@WhatsappNo", SqlDbType.VarChar).Value = entContact.WhatsappNo;
                         objCmd.Parameters.Add("@BirthDate", SqlDbType.DateTime).Value = entContact.BirthDate;
                         objCmd.Parameters.Add("@Email", SqlDbType.VarChar).Value = entContact.Email;
-                        objCmd.Parameters.Add("@Age", SqlDbType.VarChar).Value = entContact.Age;
+                        objCmd.Parameters.Add("@Age", SqlDbType.Int).Value = entContact.Age;
                         objCmd.Parameters.Add("@Address", SqlDbType.VarChar).Value = entContact.Address;
                         objCmd.Parameters.Add("@BloodGroup", SqlDbType.VarChar).Value = entContact.BloodGroup;
                         objCmd.Parameters.Add("@FacebookID", SqlDbType.VarChar).Value = entContact.FacebookID;
@@ -75,7 +75,7 @@ namespace AddressBook.DAL
 
 
                         objCmd.ExecuteNonQuery();
-                        entContact.ContactID = (SqlInt32)objCmd.Parameters["@ContactID"].Value;
+                        entContact.ContactID = Convert.ToInt32(objCmd.Parameters["@ContactID"].Value);
 
                         return true;
 
@@ -116,7 +116,7 @@ namespace AddressBook.DAL
                         #region Prepare Command
 
                         objCmd.CommandType = CommandType.StoredProcedure;
-                        objCmd.CommandText = "PR_Contact_Update";
+                        objCmd.CommandText = "PR_Contact_UpdateByPK";
                         objCmd.Parameters.Add("@ContactID", SqlDbType.Int).Value = entContact.ContactID;
                         objCmd.Parameters.Add("@CountryID", SqlDbType.Int).Value = entContact.CountryID;
                         objCmd.Parameters.Add("@StateID", SqlDbType.Int).Value = entContact.StateID;
@@ -127,7 +127,7 @@ namespace AddressBook.DAL
                         objCmd.Parameters.Add("@WhatsappNo", SqlDbType.VarChar).Value = entContact.WhatsappNo;
                         objCmd.Parameters.Add("@BirthDate", SqlDbType.DateTime).Value = entContact.BirthDate;
                         objCmd.Parameters.Add("@Email", SqlDbType.VarChar).Value = entContact.Email;
-                        objCmd.Parameters.Add("@Age", SqlDbType.VarChar).Value = entContact.Age;
+                        objCmd.Parameters.Add("@Age", SqlDbType.Int).Value = entContact.Age;
                         objCmd.Parameters.Add("@Address", SqlDbType.VarChar).Value = entContact.Address;
                         objCmd.Parameters.Add("@BloodGroup", SqlDbType.VarChar).Value = entContact.BloodGroup;
                         objCmd.Parameters.Add("@FacebookID", SqlDbType.VarChar).Value = entContact.FacebookID;
@@ -271,8 +271,8 @@ namespace AddressBook.DAL
                     {
                         #region Prepare Command
                         objCmd.CommandType = CommandType.StoredProcedure;
-                        objCmd.CommandText = "PR_City_SelectByPK";
-                        objCmd.Parameters.AddWithValue("@CityID", CityID);
+                        objCmd.CommandText = "PR_Contact_SelectByPK";
+                        objCmd.Parameters.AddWithValue("@ContactID", ContactID);
                         #endregion Prepare Command
 
                         #region Read Data & Set Controls

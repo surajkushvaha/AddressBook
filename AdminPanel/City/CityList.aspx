@@ -15,20 +15,11 @@ Inherits="AdminPanel_City_CityList" %>
         ><span class="btn btn-success">+ Add</span></asp:HyperLink
       >
     </div>
-    <div
-      id="lblMsgDiv"
-      runat="server"
-      visible="false"
-      class="w-100 my-2 alert alert-danger"
-    >
-      <asp:Label
-        ID="lblErrMsg"
-        runat="server"
-        EnableViewState="False"
-        Visible="False"
-      ></asp:Label>
-    </div>
-    <div class="text-left">
+        <asp:Panel id="lblMsgDiv" runat="server" visible="false" class="w-100 my-2 alert alert-info ">        
+            <asp:Label ID="lblErrMsg" runat="server"
+                EnableViewState="False" Visible="False"></asp:Label>
+        </asp:Panel>
+          <div class="text-left">
       <asp:GridView ID="gvCity" runat="server" OnRowCommand="gvCity_RowCommand">
         <Columns>
           <asp:TemplateField HeaderText="Delete">
@@ -39,6 +30,7 @@ Inherits="AdminPanel_City_CityList" %>
                 Text="Delete"
                 CssClass="btn btn-danger btn-sm"
                 CommandName="deleteRecord"
+                OnClientClick="javascript : return confirm('Are you sure you want to delete?')"
                 CommandArgument='<%# Eval("CityID").ToString() %>'
               />
             </ItemTemplate>

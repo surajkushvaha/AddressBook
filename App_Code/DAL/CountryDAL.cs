@@ -64,7 +64,7 @@ namespace AddressBook.DAL
 
                        
                         objCmd.ExecuteNonQuery();
-                        entCountry.CountryID = (SqlInt32)objCmd.Parameters["@CountryID"].Value;
+                        entCountry.CountryID = Convert.ToInt32(objCmd.Parameters["@CountryID"].Value);
 
                         return true;
 

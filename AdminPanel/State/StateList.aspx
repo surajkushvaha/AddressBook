@@ -13,10 +13,10 @@
             <asp:HyperLink runat="server" ID="add" NavigateUrl="~/AdminPanel/State/StateAddEditPage.aspx"><span class="btn btn-success">+ Add</span></asp:HyperLink>
         </div>
 
-        <div id="lblMsgDiv" runat="server" visible="false" class="w-100 my-2 alert alert-danger ">
+        <asp:Panel id="lblMsgDiv" runat="server" visible="false" class="w-100 my-2 alert alert-info ">        
             <asp:Label ID="lblErrMsg" runat="server"
                 EnableViewState="False" Visible="False"></asp:Label>
-        </div>
+        </asp:Panel>
 
         <div class="text-left">
             <asp:GridView ID="gvState" runat="server" OnRowCommand="gvState_RowCommand">

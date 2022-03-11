@@ -8,6 +8,8 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data.SqlTypes;
 using System.Configuration;
+using AddressBook.ENT;
+using AddressBook.BAL;
 
 public partial class AdminPanel_Country_CountryAddEdit : System.Web.UI.Page
 {
@@ -35,14 +37,9 @@ public partial class AdminPanel_Country_CountryAddEdit : System.Web.UI.Page
     #region Button : Save
     protected void btnAdd_Click(object sender, EventArgs e)
     {
-        #region Local Variable
-        SqlConnection objConn = new SqlConnection(ConfigurationManager.ConnectionStrings["AddressBookConnectionString"].ConnectionString);
-        SqlString strCountryName = SqlString.Null;
-        SqlString strCountryCode = SqlString.Null;
-        String strErrorMsg = "";
-        #endregion Local Variable
 
         #region Server side validation
+        string strErrorMsg = "";
         if (txtCountryName.Text.Trim() == "")
         {
             strErrorMsg += "- Enter Contry name.<br/>";
@@ -56,135 +53,97 @@ public partial class AdminPanel_Country_CountryAddEdit : System.Web.UI.Page
 
         if (strErrorMsg != "")
         {
-            lblCountryMsg.Visible = true;
+            lblErrMsg.Visible = true;
             lblMsgDiv.Visible = true;
-            lblCountryMsg.Text = strErrorMsg;
+            lblErrMsg.Text = strErrorMsg;
             return;
         }
         #endregion Server side validation
 
-
-        try
+        #region Collect Data
+        CountryENT entCountry = new CountryENT();
+        if (txtCountryName.Text.Trim() != "")
         {
-            #region Set Connection & Command Object
-            if (objConn.State != ConnectionState.Open)
-                objConn.Open();
+            entCountry.CountryName = txtCountryName.Text.Trim();
 
-            SqlCommand objCmd = objConn.CreateCommand();
-            objCmd.CommandType = CommandType.StoredProcedure;
-            strCountryName = txtCountryName.Text.Trim();
-            strCountryCode = txtCountryCode.Text.Trim();
+        }
+        if (txtCountryCode.Text.Trim() != "")
+        {
+            entCountry.CountryCode = txtCountryCode.Text.Trim();
 
-            objCmd.Parameters.AddWithValue("@CountryName", strCountryName);
-            objCmd.Parameters.AddWithValue("@CountryCode", strCountryCode);
-            #endregion Set Connection & Command Object
+        }
+        #endregion Collect Data
 
-            if (Request.QueryString["CountryID"]!=null)
+        CountryBAL balCountry = new CountryBAL();
+
+        if (Request.QueryString["CountryID"] != null)
+        {
+            entCountry.CountryID = Convert.ToInt32(Request.QueryString["CountryID"].ToString().Trim());
+            if (balCountry.Update(entCountry))
             {
-                #region Update Record
-                objCmd.CommandText = "[dbo].[PR_Country_UpdateByPK]";
-                objCmd.Parameters.AddWithValue("@CountryID", Request.QueryString["CountryID"].ToString().Trim());
-                objCmd.ExecuteNonQuery();
-                Response.Redirect("~/AdminPanel/Country/CountryList.aspx",true);
-                #endregion Update Record
+                ClearField();
+                Response.Redirect("~/AdminPanel/Country/CountryList.aspx");
             }
             else
             {
-                #region Insert Record
-                objCmd.CommandText = "[dbo].[PR_Country_Insert]";
-                objCmd.ExecuteNonQuery();
-                lblCountryMsg.Visible = true;
+                lblErrMsg.Text = balCountry.Message;
+                lblErrMsg.Visible = true;
                 lblMsgDiv.Visible = true;
-                lblCountryMsg.Text = "Data Inserted Successfully";
-                txtCountryName.Text = "";
-                txtCountryCode.Text = "";
-
-                txtCountryName.Focus();
-                #endregion Insert Record
             }
-
-
-            if (objConn.State == ConnectionState.Open)
-                objConn.Close();
-
         }
-        catch (Exception exc)
+        else
         {
-            lblErrMsg.Visible = true;
-            lblMsgDiv.Visible = true;
-            lblErrMsg.Text = exc.Message;
 
+            if (balCountry.Insert(entCountry))
+            {
+                ClearField();
+                lblErrMsg.Text = "Data Inserted Successfully";
+                lblErrMsg.Visible = true;
+                lblMsgDiv.Visible = true;
+            }
+            else
+            {
+                lblErrMsg.Text = balCountry.Message;
+                lblErrMsg.Visible = true;
+                lblMsgDiv.Visible = true;
+            }
         }
-        finally
-        {
-            if (objConn.State == ConnectionState.Open)
-                objConn.Close();
-
-        }
-
     }
     #endregion Button : Save
+
+    #region Clear Fields
+    private void ClearField()
+    {
+        txtCountryCode.Text = "";
+        txtCountryName.Text = "";
+        txtCountryName.Focus();
+    }
+    #endregion Clear Fields
 
     #region Fill Controls
     private void fillControls(SqlInt32 CountryID)
     {
-        #region Local Variable
-        SqlConnection objConn = new SqlConnection(ConfigurationManager.ConnectionStrings["AddressBookConnectionString"].ConnectionString);
-        #endregion Local Variable
-        try
+
+        CountryBAL balCountry = new CountryBAL();
+        CountryENT entCountry = new CountryENT();
+
+        entCountry = balCountry.SelectByPK(CountryID);
+
+        if (!entCountry.CountryName.IsNull)
         {
-            #region Connection & Command Object
-            if (objConn.State != ConnectionState.Open)
-                objConn.Open();
-            SqlCommand objCmd = objConn.CreateCommand();
-            objCmd.CommandType = CommandType.StoredProcedure;
-            objCmd.CommandText = "PR_Country_SelectByPK";
-            objCmd.Parameters.AddWithValue("@CountryID", CountryID.ToString().Trim());
-            #endregion Connection & Command Object
-
-            #region Read the value and set the controls
-            SqlDataReader objSDR = objCmd.ExecuteReader();
-
-            if (objSDR.HasRows)
-            {
-                while (objSDR.Read())
-                {
-
-                    if (!objSDR["CountryName"].Equals(DBNull.Value))
-                    {
-                        txtCountryName.Text = objSDR["CountryName"].ToString().Trim();
-                    }
-                    if (!objSDR["CountryCode"].Equals(DBNull.Value))
-                    {
-                        txtCountryCode.Text = objSDR["CountryCode"].ToString().Trim();
-                    }
-
-
-                    break;
-                }
-            }
-            else
-            {
-                lblErrMsg.Visible = true;
-                lblMsgDiv.Visible = true;
-                lblErrMsg.Text = "Something went wrong or Wrong URL";
-            }
-            #endregion Read the value and set the controls
+            txtCountryName.Text = entCountry.CountryName.ToString();
         }
-        catch (Exception exc)
+        if(!entCountry.CountryCode.IsNull)
         {
+            txtCountryCode.Text = entCountry.CountryCode.ToString();
+        }
+
+        if (balCountry.Message != null)
+        {
+            lblErrMsg.Text = balCountry.Message;
             lblErrMsg.Visible = true;
             lblMsgDiv.Visible = true;
-            lblErrMsg.Text = exc.Message;
-
         }
-        finally
-        {
-            if (objConn.State == ConnectionState.Open)
-                objConn.Close();
-
-        }
-
     }
-    #endregion Fill COntrols
+    #endregion Fill Controls
 }

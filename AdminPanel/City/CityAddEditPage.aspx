@@ -15,13 +15,11 @@
 
             </h2>
         </div>
-        <div id="lblMsgDiv" runat="server" visible="false" class="w-100 my-2 alert alert-info ">
-            <asp:Label ID="lblCityMsg" runat="server" 
-             EnableViewState="False" Visible="False"></asp:Label>
+        <asp:Panel id="lblMsgDiv" runat="server" visible="false" class="w-100 my-2 alert alert-info ">        
+            
             <asp:Label ID="lblErrMsg" runat="server"
                 EnableViewState="False" Visible="False"></asp:Label>
-        </div>
-        
+</asp:Panel>        
          <div class="row p-2 justify-content-center">
             <div class="col-md-4 align-self-center">
                 <asp:Label ID="lblStateName" runat="server" Text="State Name" CssClass="text-light"></asp:Label>

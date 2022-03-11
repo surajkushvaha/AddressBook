@@ -1,4 +1,7 @@
-﻿using System;
+﻿using AddressBook;
+using AddressBook.BAL;
+using AddressBook.ENT;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -37,13 +40,7 @@ public partial class AdminPanel_State_StateAddEditPage : System.Web.UI.Page
     #region Button : Save
     protected void btnAdd_Click(object sender, EventArgs e)
     {
-        #region Local Variables
-        SqlConnection objConn = new SqlConnection(ConfigurationManager.ConnectionStrings["AddressBookConnectionString"].ConnectionString);
-
-        SqlInt32 strCountryID =  SqlInt32.Null;
-        SqlString strStateName = SqlString.Null;
-        SqlString strStateCode = SqlString.Null;
-        #endregion Local Variables
+        
 
         #region Server Side Validation
         //server side validation
@@ -62,207 +59,111 @@ public partial class AdminPanel_State_StateAddEditPage : System.Web.UI.Page
         }
         if (strErrorMsg != "")
         {
-            lblStateMsg.Visible = true;
+            lblErrMsg.Visible = true;
             lblMsgDiv.Visible = true;
-            lblStateMsg.Text = strErrorMsg;
+            lblErrMsg.Text = strErrorMsg;
             return;
         }
         #endregion Server Side Validation
 
-        #region Gather Information
-        //Gather the information
-        if (ddlCountry.SelectedIndex > 0)
+        #region Collect Data
+        StateENT entState = new StateENT();
+        if (ddlCountry.SelectedIndex != 0)
         {
-            strCountryID = Convert.ToInt32(ddlCountry.SelectedValue);
+            entState.CountryID = Convert.ToInt32(ddlCountry.SelectedValue);
         }
         if (txtStateName.Text.Trim() != "")
         {
-            strStateName = txtStateName.Text.Trim();
+            entState.StateName = txtStateName.Text.Trim();     
         }
         if (txtStateCode.Text.Trim() != "")
         {
-            strStateCode = txtStateCode.Text.Trim();
+            entState.StateCode = txtStateCode.Text.Trim();
         }
-        #endregion Gather Information
+        #endregion Collect Data
 
-        try
+        StateBAL balState = new StateBAL();
+        if (Request.QueryString["StateID"] != null)
         {
-            #region Set Connection & Command Object
-            if (objConn.State != ConnectionState.Open)
-                objConn.Open();
-
-                SqlCommand objCmd = objConn.CreateCommand();
-                objCmd.CommandType = CommandType.StoredProcedure;
-                objCmd.Parameters.AddWithValue("@CountryID", strCountryID);
-                objCmd.Parameters.AddWithValue("@StateName", strStateName);
-                objCmd.Parameters.AddWithValue("@StateCode", strStateCode);
-            #endregion Set Connection & Command Object
-
-
-             if (Request.QueryString["StateID"]!=null)
-             {
-                #region Update Record
-                objCmd.CommandText = "[dbo].[PR_State_UpdateByPK]";
-                objCmd.Parameters.AddWithValue("@StateID", Request.QueryString["StateID"].ToString().Trim());
-                objCmd.ExecuteNonQuery();
-                Response.Redirect("~/AdminPanel/State/StateList.aspx",true);
-                #endregion Update Record
+            entState.StateID = Convert.ToInt32(Request.QueryString["StateID"].ToString().Trim());
+            if (balState.Update(entState))
+            {
+                ClearField();
+                Response.Redirect("~/AdminPanel/State/StateList.aspx");
             }
             else
-             {
-                #region Insert Record
-                objCmd.CommandText = "[dbo].[PR_State_Insert]";
-                objCmd.ExecuteNonQuery();
-                lblStateMsg.Visible = true;
+            {
+                lblErrMsg.Text = balState.Message;
+                lblErrMsg.Visible = true;
                 lblMsgDiv.Visible = true;
-                lblStateMsg.Text = "Data Inserted Successfully";
-                ddlCountry.SelectedIndex = 0;
-                txtStateName.Text = "";
-                txtStateCode.Text = "";
-
-                ddlCountry.Focus();
-                 #endregion Insert Record
-
-             }
-                if (objConn.State == ConnectionState.Open)
-                    objConn.Close();
-
+            }
         }
-        catch (Exception exc)
+        else
         {
-            lblErrMsg.Visible = true;
-            lblMsgDiv.Visible = true;
-            lblErrMsg.Text = exc.Message;
 
+            if (balState.Insert(entState))
+            {
+                ClearField();
+                lblErrMsg.Text = "Data Inserted Successfully";
+                lblErrMsg.Visible = true;
+                lblMsgDiv.Visible = true;
+            }
+            else
+            {
+                lblErrMsg.Text = balState.Message;
+                lblErrMsg.Visible = true;
+                lblMsgDiv.Visible = true;
+            }
         }
-        finally
-        {
-            if (objConn.State == ConnectionState.Open)
-                objConn.Close();
-
-        }
-
-
     }
     #endregion Button : Save
+
+    #region Clear Fields
+    private void ClearField()
+    {
+        ddlCountry.SelectedIndex = 0;
+        txtStateCode.Text = "";
+        txtStateName.Text = "";
+        ddlCountry.Focus();
+    }
+    #endregion Clear Fields
 
     #region FillDropDown
     private void FillDropDownList()
     {
-        #region Local Variables
-        SqlConnection objConn = new SqlConnection(ConfigurationManager.ConnectionStrings["AddressBookConnectionString"].ConnectionString);
-        #endregion Local Variabes
-        try
-         {
-            #region Set Connection & Command Object
-
-             if (objConn.State != ConnectionState.Open)
-                 objConn.Open();
-            SqlCommand objCmd = objConn.CreateCommand();
-            objCmd.CommandType = CommandType.StoredProcedure;
-            objCmd.CommandText = "PR_Country_SelectForDropDownList";
-            #endregion Set Connection & Command Object
-
-            #region Read the value and set the controls
-            SqlDataReader objSDR = objCmd.ExecuteReader();
-
-            if (objSDR.HasRows == true)
-            {
-                ddlCountry.DataSource = objSDR;
-                ddlCountry.DataValueField = "CountryID";
-                ddlCountry.DataTextField = "CountryName";
-                ddlCountry.DataBind();
-            }
-
-            ddlCountry.Items.Insert(0, new ListItem("Select Your Country","-1"));
-
-            if (objConn.State == ConnectionState.Open)
-                objConn.Close();
-             #endregion Read the value and set the controls
-
-         }
-        catch (Exception exc)
-        {
-            lblErrMsg.Visible = true;
-            lblMsgDiv.Visible = true;
-            lblErrMsg.Text = exc.Message;
-
-        }
-        finally
-        {
-            if (objConn.State == ConnectionState.Open)
-                objConn.Close();
-
-        }
-
+        CommonFillMethods.fillDropDownCuntry(ddlCountry);
     }
     #endregion FillDropDown
 
     #region FillControl
     private void fillControls(SqlInt32 StateID)
     {
-        #region Local Variables
-        SqlConnection objConn = new SqlConnection(ConfigurationManager.ConnectionStrings["AddressBookConnectionString"].ConnectionString);
-        #endregion Local Variables
-        try
+        StateBAL balState = new StateBAL();
+        StateENT entState = new StateENT();
+
+        entState = balState.SelectByPK(StateID);
+
+        if (!entState.CountryID.IsNull)
         {
-            #region Set Connection & Command Object
-
-            if (objConn.State != ConnectionState.Open)
-                objConn.Open();
-            SqlCommand objCmd = objConn.CreateCommand();
-            objCmd.CommandType = CommandType.StoredProcedure;
-            objCmd.CommandText = "PR_State_SelectByPK";
-            objCmd.Parameters.AddWithValue("@StateID", StateID.ToString().Trim());
-            #endregion Set Connection & Command Object
-
-            #region Read the Value and set the Controls
-            SqlDataReader objSDR = objCmd.ExecuteReader();
-
-            if (objSDR.HasRows)
-            {
-                while (objSDR.Read())
-                {
-                    if (!objSDR["CountryID"].Equals(DBNull.Value))
-                    {
-                        ddlCountry.SelectedValue = objSDR["CountryID"].ToString().Trim();
-                    }
-                    if (!objSDR["StateName"].Equals(DBNull.Value))
-                    {
-                        txtStateName.Text = objSDR["StateName"].ToString().Trim();
-                    }
-                    if (!objSDR["StateCode"].Equals(DBNull.Value))
-                    {
-                        txtStateCode.Text = objSDR["StateCode"].ToString().Trim();
-                    }
-
-
-                    break;
-                }
-            }
-            else
-            {
-                lblErrMsg.Visible = true;
-                lblMsgDiv.Visible = true;
-                lblErrMsg.Text = "Something went wrong or Wrong URL";
-            }
-            #endregion Read the Value and set the Controls
+            ddlCountry.SelectedValue = entState.CountryID.ToString().Trim();
 
         }
-        catch (Exception exc)
+        if(!entState.StateName.IsNull)
         {
+            txtStateName.Text = entState.StateName.ToString();
+
+        }
+        if(!entState.StateCode.IsNull)
+        {
+            txtStateCode.Text = entState.StateCode.ToString();
+        }
+
+        if (balState.Message != null)
+        {
+            lblErrMsg.Text = balState.Message;
             lblErrMsg.Visible = true;
             lblMsgDiv.Visible = true;
-            lblErrMsg.Text = exc.Message;
-
         }
-        finally
-        {
-            if (objConn.State == ConnectionState.Open)
-                objConn.Close();
-
-        }
-
     }
     #endregion FillControl
 }

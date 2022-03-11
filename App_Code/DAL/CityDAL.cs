@@ -55,7 +55,7 @@ namespace AddressBook.DAL
 
                         objCmd.CommandType = CommandType.StoredProcedure;
                         objCmd.CommandText = "PR_City_Insert";
-                        objCmd.Parameters.Add("@CityID", SqlDbType.Int).Direction = ParameterDirection.Output;
+                        objCmd.Parameters.Add("@CityID", SqlDbType.Int,4).Direction = ParameterDirection.Output;
                         objCmd.Parameters.Add("@StateID", SqlDbType.Int).Value = entCity.StateID;
                         objCmd.Parameters.Add("@CityName", SqlDbType.VarChar).Value = entCity.CityName;
                         objCmd.Parameters.Add("@PinCode", SqlDbType.VarChar).Value = entCity.PinCode;
@@ -65,19 +65,20 @@ namespace AddressBook.DAL
 
 
                         objCmd.ExecuteNonQuery();
-                        entCity.CityID = (SqlInt32)objCmd.Parameters["@CityID"].Value;
+                        if(objCmd.Parameters["@CityID"]!=null)
+                               entCity.CityID = Convert.ToInt32( objCmd.Parameters["@CityID"].Value);
 
                         return true;
 
                     }
                     catch (SqlException sqlex)
                     {
-                        Message = sqlex.InnerException.Message;
+                        Message = sqlex.InnerException.Message.ToString().Trim();
                         return false;
                     }
                     catch (Exception ex)
                     {
-                        Message = ex.InnerException.Message;
+                        Message = ex.InnerException.Message.ToString().Trim();
                         return false;
                     }
                     finally
@@ -121,12 +122,12 @@ namespace AddressBook.DAL
                     }
                     catch (SqlException sqlex)
                     {
-                        Message = sqlex.InnerException.Message;
+                        Message = sqlex.InnerException.Message.ToString().Trim();
                         return false;
                     }
                     catch (Exception ex)
                     {
-                        Message = ex.InnerException.Message;
+                        Message = ex.InnerException.Message.ToString().Trim();
                         return false;
                     }
                     finally
@@ -168,12 +169,12 @@ namespace AddressBook.DAL
                     }
                     catch (SqlException sqlex)
                     {
-                        Message = sqlex.InnerException.Message;
+                        Message = sqlex.InnerException.Message.ToString().Trim();
                         return false;
                     }
                     catch (Exception ex)
                     {
-                        Message = ex.InnerException.Message;
+                        Message = ex.InnerException.Message.ToString().Trim();
                         return false;
                     }
                     finally
@@ -215,12 +216,12 @@ namespace AddressBook.DAL
                     }
                     catch (SqlException sqlex)
                     {
-                        Message = sqlex.InnerException.Message;
+                        Message = sqlex.InnerException.Message.ToString().Trim();
                         return null;
                     }
                     catch (Exception ex)
                     {
-                        Message = ex.InnerException.Message;
+                        Message = ex.InnerException.Message.ToString().Trim();
                         return null;
                     }
                     finally
@@ -249,7 +250,7 @@ namespace AddressBook.DAL
                         #region Prepare Command
                         objCmd.CommandType = CommandType.StoredProcedure;
                         objCmd.CommandText = "PR_City_SelectByPK";
-                        objCmd.Parameters.AddWithValue("@CityID", CityID);
+                        objCmd.Parameters.AddWithValue("@CityID", CityID.ToString().Trim());
                         #endregion Prepare Command
 
                         #region Read Data & Set Controls
@@ -292,12 +293,12 @@ namespace AddressBook.DAL
                 }
                 catch (SqlException sqlex)
                 {
-                    Message = sqlex.InnerException.Message;
+                    Message = sqlex.InnerException.Message.ToString().Trim();
                     return null;
                 }
                 catch (Exception ex)
                 {
-                    Message = ex.InnerException.Message;
+                    Message = ex.InnerException.Message.ToString().Trim();
                     return null;
                 }
                 finally
@@ -339,13 +340,13 @@ namespace AddressBook.DAL
                     }
                     catch (SqlException sqlex)
                     {
-                        Message = sqlex.InnerException.Message;
+                        Message = sqlex.InnerException.Message.ToString().Trim();
                         return null;
 
                     }
                     catch (Exception ex)
                     {
-                        Message = ex.InnerException.Message;
+                        Message = ex.InnerException.Message.ToString().Trim();
                         return null;
                     }
                     finally

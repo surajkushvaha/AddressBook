@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Configuration;
 using System.Data.SqlTypes;
+using AddressBook.BAL;
 
 public partial class AdminPanel_State_StateList : System.Web.UI.Page
 {
@@ -25,45 +26,26 @@ public partial class AdminPanel_State_StateList : System.Web.UI.Page
     #region FillGridView
     private void fillGridView()
     {
-        #region Local Variables
-        SqlConnection objConn = new SqlConnection(ConfigurationManager.ConnectionStrings["AddressBookConnectionString"].ConnectionString);
-        #endregion Local Variables
-        try
+
+        StateBAL balState = new StateBAL();
+        DataTable dtState = new DataTable();
+
+        dtState = balState.SelectAll();
+
+        if (dtState != null && dtState.Rows.Count > 0)
         {
-            #region Set Connection & Command Object
-            if (objConn.State != ConnectionState.Open)
-                objConn.Open();
 
-            
-            SqlCommand objCmd = objConn.CreateCommand();
-            objCmd.CommandType = CommandType.StoredProcedure;
-            objCmd.CommandText = "PR_State_SelectAll";
-            #endregion Set Connection & Command Object
-
-            #region Read the value and set the controls
-            SqlDataReader objSDR = objCmd.ExecuteReader();
-
-            if (objSDR.HasRows)
-            {
-                gvState.DataSource = objSDR;
-                gvState.DataBind();
-            }
-            if (objConn.State == ConnectionState.Open)
-                objConn.Close();
-            #endregion Read the value and set the controls
+            gvState.DataSource = dtState;
+            gvState.DataBind();
         }
-        catch (Exception exc)
+        else
         {
+            gvState.DataSource = dtState;
+            gvState.DataBind();
+
+            lblErrMsg.Text = "No data";
             lblErrMsg.Visible = true;
             lblMsgDiv.Visible = true;
-            lblErrMsg.Text = exc.Message;
-
-        }
-        finally
-        {
-            if(objConn.State== ConnectionState.Open)
-                objConn.Close(); 
-
         }
 
     }
@@ -76,50 +58,23 @@ public partial class AdminPanel_State_StateList : System.Web.UI.Page
         {
             if (e.CommandArgument.ToString() != "")
             {
-                DeleteRecrord(Convert.ToInt32(e.CommandArgument.ToString().Trim()));
+                StateBAL balState = new StateBAL();
+
+                if (balState.Delete(Convert.ToInt32(e.CommandArgument.ToString().Trim())))
+                {
+                    fillGridView();
+                }
+                else
+                {
+
+                    lblErrMsg.Text = balState.Message;
+                    lblErrMsg.Visible = true;
+                    lblMsgDiv.Visible = true;
+                }
             }
         } 
        
     }
     #endregion gvState : RowCommand
 
-    #region Delete Record
-    protected void DeleteRecrord(SqlInt32 StateID)
-    {
-        #region Local Variable
-        SqlConnection objConn = new SqlConnection(ConfigurationManager.ConnectionStrings["AddressBookConnectionString"].ConnectionString.Trim());
-        #endregion Local Variable
-        try
-        {
-            #region Set the connection & Command object
-            if (objConn.State != ConnectionState.Open)
-                objConn.Open();
-
-            SqlCommand objCmd = objConn.CreateCommand();
-            objCmd.CommandType = CommandType.StoredProcedure;
-            objCmd.CommandText = "PR_State_DeleteByPK";
-            objCmd.Parameters.AddWithValue("@StateID", StateID.ToString());
-            objCmd.ExecuteNonQuery();
-            #endregion Set the connection & Command Object
-            if (objConn.State == ConnectionState.Open)
-                objConn.Close(); 
-
-        }
-        catch (Exception exc)
-        {
-            lblErrMsg.Visible = true;
-            lblMsgDiv.Visible = true;
-            lblErrMsg.Text = exc.Message;
-
-        }
-        finally
-        {
-            if (objConn.State == ConnectionState.Open)
-                objConn.Close(); 
-
-        }
-
-        fillGridView();
-    }
-    #endregion Delete Record
 }

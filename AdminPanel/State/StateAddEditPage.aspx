@@ -8,7 +8,8 @@
         <div class="mb-3">
 
             <h2 class="text-info">
-                <asp:HyperLink ID="hlBackBtn" runat="server" NavigateUrl="~/AdminPanel/State/StateList.aspx" CssClass="px-2">
+                <asp:HyperLink ID="hlBackBtn" runat="server" NavigateUrl="~/AdminPanel/State/StateList.aspx"
+                    CssClass="px-2">
                     <asp:Image runat="server" Width="35" ID="imgBackBtn" ImageUrl="~/Content/Images/back-button.png" />
                 </asp:HyperLink>
                 <asp:Label runat="server" ID="lblMode"></asp:Label>
@@ -17,13 +18,11 @@
         </div>
 
 
-        <div id="lblMsgDiv" runat="server" visible="false" class="w-100 my-2 alert alert-info ">
-            <asp:Label ID="lblStateMsg" runat="server"
-                EnableViewState="False" Visible="False"></asp:Label>
+        <asp:Panel ID="lblMsgDiv" runat="server" Visible="false" class="w-100 my-2 alert alert-info ">
+
             <asp:Label ID="lblErrMsg" runat="server"
                 EnableViewState="False" Visible="False"></asp:Label>
-        </div>
-
+        </asp:Panel>
         <div class="row p-2 justify-content-center">
             <div class="col-md-4 align-self-center">
                 <asp:Label ID="lblCountryName" runat="server" Text="Country Name" CssClass="text-light"></asp:Label>

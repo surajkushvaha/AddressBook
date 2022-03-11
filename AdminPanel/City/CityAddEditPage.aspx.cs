@@ -1,4 +1,7 @@
-﻿using System;
+﻿using AddressBook;
+using AddressBook.BAL;
+using AddressBook.ENT;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -39,16 +42,8 @@ public partial class AdminPanel_City_CityAddEditPage : System.Web.UI.Page
     #region Button : Save
     protected void btnAdd_Click(object sender, EventArgs e)
     {
-        #region Local Variable
-        SqlConnection objConn = new SqlConnection(ConfigurationManager.ConnectionStrings["AddressBookConnectionString"].ConnectionString);
-        SqlInt32 strStateID = SqlInt32.Null;
-        SqlString strCityName = SqlString.Null;
-        SqlString strPinCode = SqlString.Null;
-        SqlString strSTDCode = SqlString.Null;
-        #endregion Local Variable
-
+        
         #region Server Side Validation
-        //server side validation
         String strErrorMsg = "";
         if (ddlState.SelectedIndex == 0)
         {
@@ -68,142 +63,87 @@ public partial class AdminPanel_City_CityAddEditPage : System.Web.UI.Page
         }
         if (strErrorMsg != "")
         {
-            lblCityMsg.Visible = true;
             lblMsgDiv.Visible = true;
-            lblCityMsg.Text = strErrorMsg;
+            lblErrMsg.Text = strErrorMsg;
+            lblErrMsg.Visible = true;
             return;
         }
         #endregion Server Side Validation
 
-        #region Gather Information
-        //Gather the information
+        #region Collect Form Data
+
+        CityENT entCity = new CityENT();
+
         if (ddlState.SelectedIndex > 0)
-        {
-            strStateID = Convert.ToInt32(ddlState.SelectedValue);
-        }
+            entCity.StateID =Convert.ToInt32(ddlState.SelectedValue);
+
         if (txtCityName.Text.Trim() != "")
-        {
-            strCityName = txtCityName.Text.Trim();
-        }
+            entCity.CityName = txtCityName.Text.Trim();
+
         if (txtSTDCode.Text.Trim() != "")
-        {
-            strSTDCode = txtSTDCode.Text.Trim();
-        }
-        if (txtSTDCode.Text.Trim() != "")
-        {
-            strPinCode = txtPinCode.Text.Trim();
-        }
-        #endregion Gather Information
+            entCity.STDCode = txtSTDCode.Text.Trim();
 
-        try
-        {
-            #region Connection & Command Object
-            if (objConn.State != ConnectionState.Open)
-                objConn.Open();
-            SqlCommand objCmd = objConn.CreateCommand();
-            objCmd.CommandType = CommandType.StoredProcedure;
-            objCmd.Parameters.AddWithValue("@StateID", strStateID);
-            objCmd.Parameters.AddWithValue("@CityName", strCityName);
-            objCmd.Parameters.AddWithValue("@PinCode", strPinCode);
-            objCmd.Parameters.AddWithValue("@STDCode", strSTDCode);
-            #endregion Connection & Command Object
+        if (txtPinCode.Text.Trim() != "")
+            entCity.PinCode = txtPinCode.Text.Trim();
 
 
-            if (Request.QueryString["CityID"]!=null)
-            {
-                #region Update Record
-                objCmd.CommandText = "[dbo].[PR_City_UpdateByPK]";
-                objCmd.Parameters.AddWithValue("@CityID", Request.QueryString["CityID"].ToString().Trim());
-                objCmd.ExecuteNonQuery();
-                Response.Redirect("~/AdminPanel/City/CityList.aspx",true);
-                #endregion Update Record
+        #endregion Collect Form Data
+
+        CityBAL balCity = new CityBAL();
+        if (Request.QueryString["CityID"] != null)
+        {
+            entCity.CityID = Convert.ToInt32(Request.QueryString["CityID"].ToString().Trim());
+            if(balCity.Update(entCity)){
+                ClearField();
+                Response.Redirect("~/AdminPanel/City/CityList.aspx");
             }
             else
             {
-                #region Insert Record
-                objCmd.CommandText = "[dbo].[PR_City_Insert]";
-                objCmd.ExecuteNonQuery();
-                lblCityMsg.Visible = true;
+                lblErrMsg.Text = balCity.Message;
+                lblErrMsg.Visible = true;
                 lblMsgDiv.Visible = true;
-                lblCityMsg.Text = "Data Inserted Successfully";
-                ddlState.SelectedIndex = 0;
-                txtCityName.Text = "";
-                txtPinCode.Text = "";
-                txtSTDCode.Text = "";
-
-                ddlState.Focus();
-                #endregion Insert Record
-
             }
-
-
-            if (objConn.State == ConnectionState.Open)
-                objConn.Close();
-
         }
-        catch (Exception exc)
+        else
         {
-            lblErrMsg.Visible = true;
-            lblMsgDiv.Visible = true;
-            lblErrMsg.Text = exc.Message;
 
+            if (balCity.Insert(entCity))
+            {
+                ClearField();
+                lblErrMsg.Text = "Data Inserted Successfully";
+                lblErrMsg.Visible = true;
+                lblMsgDiv.Visible = true;
+            }
+            else
+            {
+                lblErrMsg.Text = balCity.Message;
+                lblErrMsg.Visible = true;
+                lblMsgDiv.Visible = true;
+            }
         }
-        finally
-        {
-            if (objConn.State == ConnectionState.Open)
-                objConn.Close();
-
-        }
+       
 
 
     }
     #endregion Button : Save
 
+    #region Clear Form
+    private void ClearField()
+    {
+        ddlState.SelectedIndex = 0;
+        txtCityName.Text = "";
+        txtPinCode.Text = "";
+        txtSTDCode.Text = "";
+
+        ddlState.Focus();
+    }
+    #endregion Clear Form
+
     #region Fill DropDown
     private void FillDropDownList()
     {
-        #region Local Variables
-        SqlConnection objConn = new SqlConnection(ConfigurationManager.ConnectionStrings["AddressBookConnectionString"].ConnectionString);
-        #endregion Local Variables
-        try
-        {
-            #region Connection & Command Object
-            if (objConn.State != ConnectionState.Open)
-                objConn.Open();
-            SqlCommand objCmd = objConn.CreateCommand();
-            objCmd.CommandType = CommandType.StoredProcedure;
-            objCmd.CommandText = "PR_State_SelectForDropDownList";
-            #endregion Connection & Command Object
-
-            #region Read the value and set the controls
-            SqlDataReader objSDR = objCmd.ExecuteReader();
-            if (objSDR.HasRows == true)
-            {
-                ddlState.DataSource = objSDR;
-                ddlState.DataValueField = "StateID";
-                ddlState.DataTextField = "StateName";
-                ddlState.DataBind();
-            }
-            ddlState.Items.Insert(0, new ListItem("Select Your State", "-1"));
-
-            if (objConn.State == ConnectionState.Open)
-                objConn.Close();
-            #endregion Read the value and set the controls
-
-        }
-        catch (Exception exc)
-        {
-            lblErrMsg.Visible = true;
-            lblMsgDiv.Visible = true;
-            lblErrMsg.Text = exc.Message;
-
-        }
-        finally
-        {
-            if (objConn.State == ConnectionState.Open)
-                objConn.Close();
-
-        }
+        CommonFillMethods.fillDropDownState(ddlState);
+        
 
     }
     #endregion Fill DropDown
@@ -212,70 +152,23 @@ public partial class AdminPanel_City_CityAddEditPage : System.Web.UI.Page
 
     private void fillControls(SqlInt32 CityID)
     {
-        #region Local Variables
-        SqlConnection objConn = new SqlConnection(ConfigurationManager.ConnectionStrings["AddressBookConnectionString"].ConnectionString);
-        #endregion Local Variables
-
-        try
+        CityENT entCity = new CityENT();
+        CityBAL balCity = new CityBAL();
+        entCity = balCity.SelectByPK(CityID);
+        if(!entCity.StateID.IsNull)
+            ddlState.SelectedValue = entCity.StateID.Value.ToString().Trim();
+        if (!entCity.CityName.IsNull)
+            txtCityName.Text = entCity.CityName.Value.ToString().Trim();
+        if (!entCity.STDCode.IsNull)
+            txtSTDCode.Text = entCity.STDCode.Value.ToString().Trim();
+        if (!entCity.PinCode.IsNull)
+            txtPinCode.Text = entCity.PinCode.Value.ToString().Trim();
+       
+        if(balCity.Message != null)
         {
-            #region Connection & Command Object
-            if (objConn.State != ConnectionState.Open)
-                objConn.Open();
-
-            SqlCommand objCmd = objConn.CreateCommand();
-            objCmd.CommandType = CommandType.StoredProcedure;
-            objCmd.CommandText = "PR_City_SelectByPK";
-            objCmd.Parameters.AddWithValue("@CityID", CityID.ToString().Trim());
-            #endregion Connection & Command Object
-
-            #region Read the value and set the controls
-            SqlDataReader objSDR = objCmd.ExecuteReader();
-
-            if (objSDR.HasRows)
-            {
-                while (objSDR.Read())
-                {
-                    if (!objSDR["StateID"].Equals(DBNull.Value))
-                    {
-                        ddlState.SelectedValue = objSDR["StateID"].ToString().Trim();
-                    }
-                    if (!objSDR["CityName"].Equals(DBNull.Value))
-                    {
-                        txtCityName.Text = objSDR["CityName"].ToString().Trim();
-                    }
-                    if (!objSDR["STDCode"].Equals(DBNull.Value))
-                    {
-                        txtSTDCode.Text = objSDR["STDCode"].ToString().Trim();
-                    }
-                    if (!objSDR["PinCode"].Equals(DBNull.Value))
-                    {
-                        txtPinCode.Text = objSDR["PinCode"].ToString().Trim();
-                    }
-
-                    break;
-                }
-            }
-            else
-            {
-                lblErrMsg.Visible = true;
-                lblMsgDiv.Visible = true;
-                lblErrMsg.Text = "Something went wrong or Wrong URL";
-            }
-            #endregion Read the value and set the controls
-
-        }
-        catch (Exception exc)
-        {
+            lblErrMsg.Text = balCity.Message;
             lblErrMsg.Visible = true;
             lblMsgDiv.Visible = true;
-            lblErrMsg.Text = exc.Message;
-
-        }
-        finally
-        {
-            if (objConn.State == ConnectionState.Open)
-                objConn.Close();
-
         }
 
     }

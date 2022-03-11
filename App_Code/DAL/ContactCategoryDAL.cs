@@ -60,7 +60,7 @@ namespace AddressBook.DAL
 
 
                         objCmd.ExecuteNonQuery();
-                        entContactCategory.ContactCategoryID= (SqlInt32)objCmd.Parameters["@ContactCategoryID"].Value;
+                        entContactCategory.ContactCategoryID= Convert.ToInt32(objCmd.Parameters["@ContactCategoryID"].Value);
 
                         return true;
 
@@ -102,7 +102,7 @@ namespace AddressBook.DAL
                         #region Prepare Command
 
                         objCmd.CommandType = CommandType.StoredProcedure;
-                        objCmd.CommandText = "PR_ContactCategory_Update";
+                        objCmd.CommandText = "PR_ContactCategory_UpdateByPK";
                         objCmd.Parameters.Add("@ContactCategoryID", SqlDbType.Int).Value = entContactCategory.ContactCategoryID;
                         objCmd.Parameters.Add("@ContactCategoryName", SqlDbType.VarChar).Value = entContactCategory.ContactCategoryName;
                         #endregion Prepare Command
@@ -149,7 +149,7 @@ namespace AddressBook.DAL
                         #region Prepare Command
 
                         objCmd.CommandType = CommandType.StoredProcedure;
-                        objCmd.CommandText = "PR_ContatactCategory_DeleteByPK";
+                        objCmd.CommandText = "PR_ContactCategory_DeleteByPK";
                         objCmd.Parameters.AddWithValue("@ContactCategoryID", ContactCategoryID);
 
                         #endregion Prepare Command
@@ -245,7 +245,7 @@ namespace AddressBook.DAL
                         #region Prepare Command
                         objCmd.CommandType = CommandType.StoredProcedure;
                         objCmd.CommandText = "PR_ContactCategory_SelectByPK";
-                        objCmd.Parameters.AddWithValue("@ContactCotegoryID", ContactCotegoryID);
+                        objCmd.Parameters.AddWithValue("@ContactCategoryID", ContactCotegoryID);
                         #endregion Prepare Command
 
                         #region Read Data & Set Controls
