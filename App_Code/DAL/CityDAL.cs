@@ -73,7 +73,7 @@ namespace AddressBook.DAL
                     }
                     catch (SqlException sqlex)
                     {
-                        Message = sqlex.InnerException.Message.ToString().Trim();
+                        Message = sqlex.Message.ToString().Trim();
                         return false;
                     }
                     catch (Exception ex)
@@ -122,7 +122,7 @@ namespace AddressBook.DAL
                     }
                     catch (SqlException sqlex)
                     {
-                        Message = sqlex.InnerException.Message.ToString().Trim();
+                        Message = sqlex.Message.ToString().Trim();
                         return false;
                     }
                     catch (Exception ex)
@@ -169,7 +169,7 @@ namespace AddressBook.DAL
                     }
                     catch (SqlException sqlex)
                     {
-                        Message = sqlex.InnerException.Message.ToString().Trim();
+                        Message = sqlex.Message.ToString().Trim();
                         return false;
                     }
                     catch (Exception ex)
@@ -216,7 +216,7 @@ namespace AddressBook.DAL
                     }
                     catch (SqlException sqlex)
                     {
-                        Message = sqlex.InnerException.Message.ToString().Trim();
+                        Message = sqlex.Message.ToString().Trim();
                         return null;
                     }
                     catch (Exception ex)
@@ -293,7 +293,7 @@ namespace AddressBook.DAL
                 }
                 catch (SqlException sqlex)
                 {
-                    Message = sqlex.InnerException.Message.ToString().Trim();
+                    Message = sqlex.Message.ToString().Trim();
                     return null;
                 }
                 catch (Exception ex)
@@ -340,7 +340,7 @@ namespace AddressBook.DAL
                     }
                     catch (SqlException sqlex)
                     {
-                        Message = sqlex.InnerException.Message.ToString().Trim();
+                        Message = sqlex.Message.ToString().Trim();
                         return null;
 
                     }

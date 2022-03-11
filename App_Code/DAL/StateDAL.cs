@@ -70,7 +70,7 @@ namespace AddressBook.DAL
                     }
                     catch (SqlException sqlex)
                     {
-                        Message = sqlex.InnerException.Message;
+                        Message = sqlex.Message;
                         return false;
                     }
                     catch (Exception ex)
@@ -120,7 +120,7 @@ namespace AddressBook.DAL
                     }
                     catch (SqlException sqlex)
                     {
-                        Message = sqlex.InnerException.Message;
+                        Message = sqlex.Message;
                         return false;
                     }
                     catch (Exception ex)
@@ -166,7 +166,7 @@ namespace AddressBook.DAL
                     }
                     catch (SqlException sqlex)
                     {
-                        Message = sqlex.InnerException.Message;
+                        Message = sqlex.Message;
                         return false;
                     }
                     catch (Exception ex)
@@ -212,7 +212,7 @@ namespace AddressBook.DAL
                     }
                     catch (SqlException sqlex)
                     {
-                        Message = sqlex.InnerException.Message;
+                        Message = sqlex.Message;
                         return null;
                     }
                     catch (Exception ex)
@@ -286,7 +286,7 @@ namespace AddressBook.DAL
                 }
                 catch (SqlException sqlex)
                 {
-                    Message = sqlex.InnerException.Message;
+                    Message = sqlex.Message;
                     return null;
                 }
                 catch (Exception ex)
@@ -332,7 +332,7 @@ namespace AddressBook.DAL
                     }
                     catch (SqlException sqlex)
                     {
-                        Message = sqlex.InnerException.Message;
+                        Message = sqlex.Message;
                         return null;
 
                     }
